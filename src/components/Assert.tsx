@@ -8,7 +8,15 @@ function isProduce(product: Product): product is ProduceProduct {
   return (product as ProduceProduct).kcal !== undefined;
 }
 
-//TODO: assert and guard Tools
+function isTool(product: Product): product is ToolProduct {
+  return (product as ToolProduct).maker !== undefined;
+}
+
+function isElectronicTool(
+  product: Product
+): product is ElectronicToolProduct {
+  return isElectronic(product) && isTool(product);
+}
 
 async function Assert() {
   console.clear();
@@ -29,9 +37,20 @@ async function Assert() {
       category: "produce",
       kcal: 50,
     },
-
-    //TODO add ToolProduct with maker property
-    //TODO add ElectronicToolProduct extending ElectronicProduct and ToolProduct
+    {
+      name: "Wood cutting axe",
+      price: 10000,
+      category: "tool",
+      maker: "Fiskars",
+    },
+    {
+      name: "Chainsaw",
+      price: 10000,
+      category: "electronic-tool",
+      maker: "Fiskars",
+      voltage: 220,
+      batteryDriven: false,
+    },
   ];
 
   return (
@@ -39,6 +58,7 @@ async function Assert() {
       {products.map((product) => (
         <div key={product.name} className="mb-2 bg-slate-200 p-4">
           <p>
+            {isTool(product) && `${product.maker} - `}
             {product.name} - {product.price}
           </p>
           <p>
@@ -52,6 +72,14 @@ async function Assert() {
               </p>
             </div>
           )}
+          {isElectronicTool(product) && (
+            <p>
+              <strong>
+                Is battery driven:&nbsp;
+              </strong>
+              {product.batteryDriven ? "Yes" : "No"}
+            </p>
+          )}
           {isProduce(product) && (
             <div>
               <p>
@@ -60,6 +88,7 @@ async function Assert() {
               </p>
             </div>
           )}
+
           {/* //TODO render data about tools */}
         </div>
       ))}
