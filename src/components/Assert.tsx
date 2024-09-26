@@ -1,22 +1,6 @@
 import { getSomeData } from "@/actions/api";
+import ProductCard from "./ProductCard";
 
-function isElectronic(product: Product): product is ElectronicProduct {
-  return (product as ElectronicProduct).voltage !== undefined;
-}
-
-function isProduce(product: Product): product is ProduceProduct {
-  return (product as ProduceProduct).kcal !== undefined;
-}
-
-function isTool(product: Product): product is ToolProduct {
-  return (product as ToolProduct).maker !== undefined;
-}
-
-function isElectronicTool(
-  product: Product
-): product is ElectronicToolProduct {
-  return isElectronic(product) && isTool(product);
-}
 
 async function Assert() {
   console.clear();
@@ -56,41 +40,7 @@ async function Assert() {
   return (
     <div>
       {products.map((product) => (
-        <div key={product.name} className="mb-2 bg-slate-200 p-4">
-          <p>
-            {isTool(product) && `${product.maker} - `}
-            {product.name} - {product.price}
-          </p>
-          <p>
-            <em>{product.category}</em>
-          </p>
-          {isElectronic(product) && (
-            <div>
-              <p>
-                <strong>Voltage:&nbsp;</strong>
-                {product.voltage}
-              </p>
-            </div>
-          )}
-          {isElectronicTool(product) && (
-            <p>
-              <strong>
-                Is battery driven:&nbsp;
-              </strong>
-              {product.batteryDriven ? "Yes" : "No"}
-            </p>
-          )}
-          {isProduce(product) && (
-            <div>
-              <p>
-                <strong>kCal:&nbsp;</strong>
-                {product.kcal}
-              </p>
-            </div>
-          )}
-
-          {/* //TODO render data about tools */}
-        </div>
+        <ProductCard key={product.name} product={product} />
       ))}
     </div>
   );
