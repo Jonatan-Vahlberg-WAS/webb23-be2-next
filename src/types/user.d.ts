@@ -1,5 +1,8 @@
 type User = {
-  //TODO: fill in user typing
+  id: number;
+  name: string
+  email: string;
+  phone: string
 };
 
 type UserPost = {
