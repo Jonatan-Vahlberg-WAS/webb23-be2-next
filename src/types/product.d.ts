@@ -5,7 +5,7 @@ type BaseProduct = {
 
 type ElectronicProduct = BaseProduct & {
   voltage: number;
-  category: "electronic" | "electronic-tool";
+  category: "electronic";
 };
 
 type ProduceProduct = BaseProduct & {
@@ -14,11 +14,11 @@ type ProduceProduct = BaseProduct & {
 };
 
 type ToolProduct = BaseProduct & {
-  category: "tool" | "electronic-tool";
+  category: "tool";
   maker: string;
 };
 
-type ElectronicToolProduct = ElectronicProduct & ToolProduct & {
+type ElectronicToolProduct = Omit<ElectronicProduct,"category"> & Omit<ToolProduct, "category"> & {
     category: "electronic-tool";
     batteryDriven?: boolean;
 }
