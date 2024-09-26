@@ -3,3 +3,5 @@ type Book = {
     title: string;
     id: number
 }
+
+type BookData = Omit<Book, "id">

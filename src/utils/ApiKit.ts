@@ -23,12 +23,19 @@ class ApiKit<T> {
         throw new Error("Unable to get list")
     }
 
-    async getItemOnId(id: number) {
-        //TODO: implemnet GET for spesific item
+    async getItemOnId(id: number): Promise<T> {
+        const url = new URL(`${this.baseURL}/${id}/`)
+        const response = await fetch(url)
+
+        if(response.ok) {
+            const data = await response.json();
+            return data
+        }
+        throw new Error("Unable to get list")
     }
 
     async addItem(item: Omit<T,"id">) {
-        //TODO implement POST for new item
+        //TODO implement POST for new T
     }
 }
 
