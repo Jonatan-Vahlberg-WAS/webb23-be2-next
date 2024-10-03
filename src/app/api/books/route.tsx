@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       ...body,
       id: 1,
     };
-    return NextResponse.json(book);
+    return NextResponse.json(book, { status: 201 });
   } catch (error: any) {
     console.warn("Error creating book: ", error.message);
     return NextResponse.json(

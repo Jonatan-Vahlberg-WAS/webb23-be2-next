@@ -2,8 +2,14 @@ type ErrorObject = {
     [key: string]: any;
 }
 
-export default function bookValidator(data: BookData): [boolean, ErrorObject] {
+export default function bookValidator(data: BookData | Book, id?: number): [boolean, ErrorObject] {
   let errors: ErrorObject = {};
+  if((data as Book).id !== undefined) {
+    console.log("book", data, id)
+    if((data as Book).id !== id) {
+      errors.id = "Id missmatch"
+    }
+  }
   if (!data.title) {
     errors.title = "Title is required";
   }
