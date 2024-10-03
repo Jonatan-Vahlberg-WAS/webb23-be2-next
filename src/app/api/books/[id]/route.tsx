@@ -1,7 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 
 import books from "@/data/books.json";
+import authors from "@/data/authors.json";
+
 import bookValidator from "@/utils/validators/bookValidator";
+import { includeAuthor } from "@/helpers/bookHelpers";
 
 export async function GET(request: NextRequest, options: APIOptions) {
   const id = options.params.id;
@@ -17,9 +20,9 @@ export async function GET(request: NextRequest, options: APIOptions) {
     );
   }
 
-  //TODO: Include author from book if found
+  const bookWithAuthor = includeAuthor(book, authors)
 
-  return NextResponse.json(book);
+  return NextResponse.json(bookWithAuthor);
 }
 
 export async function PUT(request: NextRequest, options: APIOptions) {
@@ -52,7 +55,8 @@ export async function PUT(request: NextRequest, options: APIOptions) {
       ...localBooks[bookIndex],
       ...body,
     };
-    return NextResponse.json(updatedBook);
+    const updatedBookWithAuthor = includeAuthor(updatedBook, authors)
+    return NextResponse.json(updatedBookWithAuthor);
   } catch (error: any) {
     console.warn("Error updating book: ", error.message);
 

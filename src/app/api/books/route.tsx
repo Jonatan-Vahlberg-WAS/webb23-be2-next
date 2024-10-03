@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 import books from "@/data/books.json";
 import authors from "@/data/authors.json";
 import bookValidator from "@/utils/validators/bookValidator";
+import { includeAuthor } from "@/helpers/bookHelpers";
 
 function lowercaseCompare(str: String = "", match: string) {
   return str.toLowerCase().includes(match.toLowerCase());
@@ -18,19 +19,11 @@ export async function GET(request: NextRequest) {
 
   if(withAuthor) {
     filteredBooks = filteredBooks.map(book => {
-      const author = authors.find(author => author.id === book.author)
-      if(author) {
-        return ({
-          ...book,
-          author
-        } as BookWithAuthor)
-      }
-      return book
+      return includeAuthor(book, authors)
     })
   }
 
   if (q) {
-    console.log("q -> ", q);
     filteredBooks = filteredBooks.filter(
       (book) => {
         let matches = (
