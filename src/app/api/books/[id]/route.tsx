@@ -20,8 +20,6 @@ export async function GET(request: NextRequest, options: APIOptions) {
   return NextResponse.json(book);
 }
 
-//! PUT - GET + POST
-
 export async function PUT(request: NextRequest, options: APIOptions) {
   const id = options.params.id;
   const localBooks: Book[] = [...books];
