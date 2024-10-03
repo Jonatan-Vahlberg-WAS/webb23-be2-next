@@ -1,0 +1,48 @@
+[
+    {
+      "id": 1,
+      "author": "George Orwell",
+      "title": "1984",
+      "publishedAt": "1949-06-08",
+      "category": "Dystopian",
+      "summary": "A novel depicting a totalitarian society under constant surveillance.",
+      "rating": 4.8
+    },
+    {
+      "id": 2,
+      "author": "Harper Lee",
+      "title": "To Kill a Mockingbird",
+      "publishedAt": "1960-07-11",
+      "category": "Classic Literature",
+      "summary": "A story about racial injustice in the Deep South.",
+      "rating": 4.9
+    },
+    {
+      "id": 3,
+      "author": "J.K. Rowling",
+      "title": "Harry Potter and the Sorcerer's Stone",
+      "publishedAt": "1997-06-26",
+      "category": "Fantasy",
+      "summary": "A young boy discovers he is a wizard and attends a magical school.",
+      "rating": 4.7
+    },
+    {
+      "id": 4,
+      "author": "F. Scott Fitzgerald",
+      "title": "The Great Gatsby",
+      "publishedAt": "1925-04-10",
+      "category": "Classic Literature",
+      "summary": "A critique of the American Dream set in the 1920s.",
+      "rating": 4.4
+    },
+    {
+      "id": 5,
+      "author": "Mary Shelley",
+      "title": "Frankenstein",
+      "publishedAt": "1818-01-01",
+      "category": "Gothic Fiction",
+      "summary": "A scientist creates a sentient creature in an unorthodox experiment.",
+      "rating": 4.3
+    }
+  ]
+  

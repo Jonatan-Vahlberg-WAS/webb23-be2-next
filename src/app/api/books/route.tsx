@@ -1,25 +1,30 @@
 import { NextResponse, NextRequest } from "next/server";
 
-const books: Book[] = [
-    {
-      author: "George Orwell",
-      title: "1984",
-      id: 1
-    },
-    {
-      author: "Harper Lee",
-      title: "To Kill a Mockingbird",
-      id: 2
-    },
-    {
-      author: "J.R.R. Tolkien",
-      title: "The Lord of the Rings",
-      id: 3
-    }
-  ];
+import books from "@/data/books.json";
 
-  //TODO: get all above books
-  //TODO: 2 accept 'q' query to filter books on title and author part of string
+function lowercaseCompare(str: String = "", match: string) {
+  return str.toLowerCase().includes(match.toLowerCase())
+}
+
+export async function GET(request: NextRequest) {
+  let filteredBooks: NewBook[] = [...books] //! SIMULATED DB CALL
+
+  //search query filter
+  const searchParams = new URL(request.url).searchParams;
+  const q = searchParams.get("q")
+
+  if(q) {
+    console.log("q -> ", q)
+    filteredBooks = filteredBooks.filter(book => (
+      lowercaseCompare(book.title, q) ||
+      lowercaseCompare(book.author, q) ||
+      lowercaseCompare(book.summary, q)
+    ))
+  }
+
+  
+  return NextResponse.json(filteredBooks)
+}
 
 export async function POST(request: NextRequest) {
   try {
