@@ -2,7 +2,7 @@ type ErrorObject = {
     [key: string]: any;
 }
 
-export default function bookValidator(data: NewBookData): [boolean, ErrorObject] {
+export default function bookValidator(data: BookData): [boolean, ErrorObject] {
   let errors: ErrorObject = {};
   if (!data.title) {
     errors.title = "Title is required";
