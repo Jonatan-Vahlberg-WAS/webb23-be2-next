@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 
 import books from "@/data/books.json";
+import bookValidator from "@/utils/validators/bookValidator";
 
 function lowercaseCompare(str: String = "", match: string) {
   return str.toLowerCase().includes(match.toLowerCase())
@@ -28,8 +29,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: BookData = await request.json();
-    const book: Book = { //! SIMULATED DB CALL
+    const body: NewBookData = await request.json();
+    let [hasErrors, errors] = bookValidator(body)
+    if(hasErrors) {
+      return NextResponse.json({
+        errors,
+      }, { status: 400 })
+    }
+    const book: NewBook = { //! SIMULATED DB CALL
       ...body,
       id: 1,
     };
