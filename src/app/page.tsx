@@ -1,8 +1,10 @@
 import Assert from "@/components/Assert";
 import Generics from "@/components/Generics";
 import Generics2 from "@/components/Generics2";
+import Generics3Server from "@/components/Generics2server";
+import { NextPage } from "next";
 
-export default function Home() {
+export default function Home({searchParams}: any) {
   console.clear();
   console.log("Hello from the page component!");
   return (
@@ -10,7 +12,10 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Assert/>
         {/* <Generics/> */}
-        <Generics2/>
+        {/* <Generics2/> */}
+        <Generics3Server
+          search={searchParams.search}
+        />
        </main>
     </div>
   );
