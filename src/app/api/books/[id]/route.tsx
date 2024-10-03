@@ -17,6 +17,8 @@ export async function GET(request: NextRequest, options: APIOptions) {
     );
   }
 
+  //TODO: Include author from book if found
+
   return NextResponse.json(book);
 }
 
@@ -36,9 +38,9 @@ export async function PUT(request: NextRequest, options: APIOptions) {
 
   // Validate data
   try {
-    const body: Book = await request.json()
-    const [hasErrors, errors] = bookValidator(body, Number(id))
-    if(hasErrors) {
+    const body: Book = await request.json();
+    const [hasErrors, errors] = bookValidator(body, Number(id));
+    if (hasErrors) {
       return NextResponse.json(
         {
           errors,
@@ -48,10 +50,10 @@ export async function PUT(request: NextRequest, options: APIOptions) {
     }
     const updatedBook: Book = {
       ...localBooks[bookIndex],
-      ...body
-    }
+      ...body,
+    };
     return NextResponse.json(updatedBook);
-  } catch(error: any) {
+  } catch (error: any) {
     console.warn("Error updating book: ", error.message);
 
     return NextResponse.json(
@@ -63,7 +65,6 @@ export async function PUT(request: NextRequest, options: APIOptions) {
       }
     );
   }
-
 }
 
 export async function DELETE(request: NextRequest, options: APIOptions) {
@@ -79,8 +80,7 @@ export async function DELETE(request: NextRequest, options: APIOptions) {
       { status: 404 }
     );
   }
-  localBooks.splice(bookIndex,1)
+  localBooks.splice(bookIndex, 1);
 
-  return new Response(null, { status: 204 })
+  return new Response(null, { status: 204 });
 }
-
