@@ -3,7 +3,6 @@
 export default function authorValidator(data: AuthorData | Author, id?: number): [boolean, ErrorObject] {
   let errors: ErrorObject = {};
   if((data as Author).id !== undefined) {
-    console.log("book", data, id)
     if((data as Author).id !== id) {
       errors.id = "Id missmatch"
     }
