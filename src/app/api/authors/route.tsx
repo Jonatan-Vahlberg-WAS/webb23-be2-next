@@ -4,10 +4,16 @@ import authors from "@/data/authors.json";
 
 import { getQueries, lowercaseCompare } from "@/helpers/apiHelpers";
 import authorValidator from "@/utils/validators/authorValidator";
+import { PrismaClient } from "@prisma/client";
+
+const prismaClient = new PrismaClient
 
 export async function GET(request: NextRequest) {
   const [q] = getQueries(request.url, ["q"]);
   let filteredAuthors = [...authors]; //! DB call
+
+  const _authors = await prismaClient.author.findMany()
+  console.log("authors from db", _authors)
 
   if (q) {
     filteredAuthors = filteredAuthors.filter((author) =>
@@ -30,13 +36,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    const _newAuthor = await prismaClient.author.create({
+      data: body
+    })
+    console.log("new author", _newAuthor)
     const author: Author = {
       ...body,
       id: 1,
     };
     return NextResponse.json(author);
   } catch (error: any) {
-    console.warn("Error creating author", error.message);
+    console.warn("Error creating author", error);
     return NextResponse.json(
       {
         message: "A valid 'AuthorData' object has to be sent",
