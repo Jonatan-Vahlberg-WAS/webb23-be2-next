@@ -1,6 +1,3 @@
-type ErrorObject = {
-    [key: string]: any;
-}
 
 export default function bookValidator(data: BookData | Book, id?: number): [boolean, ErrorObject] {
   let errors: ErrorObject = {};
