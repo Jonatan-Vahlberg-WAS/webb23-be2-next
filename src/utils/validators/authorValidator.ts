@@ -1,6 +1,6 @@
 
 
-export default function authorValidator(data: AuthorData | Author, id?: number): [boolean, ErrorObject] {
+export default function authorValidator(data: AuthorData | Author, id?: string): [boolean, ErrorObject] {
   let errors: ErrorObject = {};
   if((data as Author).id !== undefined) {
     if((data as Author).id !== id) {
