@@ -18,4 +18,13 @@ model Author {
   firstName   String
   lastName    String
   dateOfBirth String
+  books       Book[]
+}
+
+model Book {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  author    Author   @relation(fields: [authorId], references: [id])
+  authorId String @db.ObjectId
+  createdAt DateTime @default(now())
 }

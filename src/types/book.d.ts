@@ -8,13 +8,9 @@ type Author = {
 type AuthorData = Omit<Author, "id">;
 
 type Book = {
-  id: number;
-  author: number;
+  id: string;
+  authorId: string;
   title: string;
-  publishedAt: string;
-  category: string;
-  summary?: string;
-  rating?: number;
 };
 
 type BookWithAuthor = Omit<Book, "author"> & {

@@ -1,7 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 
-import authors from "@/data/authors.json";
-
 import authorValidator from "@/utils/validators/authorValidator";
 import { Author, PrismaClient } from "@prisma/client";
 
@@ -14,6 +12,9 @@ export async function GET(request: NextRequest, options: APIOptions) {
     where: {
       id: id,
     },
+    include: {
+      books: true
+    }
   });
 
   if (!author) {
