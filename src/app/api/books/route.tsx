@@ -4,10 +4,7 @@ import books from "@/data/books.json";
 import authors from "@/data/authors.json";
 import bookValidator from "@/utils/validators/bookValidator";
 import { includeAuthor } from "@/helpers/bookHelpers";
-
-function lowercaseCompare(str: String = "", match: string) {
-  return str.toLowerCase().includes(match.toLowerCase());
-}
+import { lowercaseCompare } from "@/helpers/apiHelpers";
 
 export async function GET(request: NextRequest) {
   let filteredBooks: (Book | BookWithAuthor)[] = [...books]; //! SIMULATED DB CALL
