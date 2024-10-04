@@ -1,27 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import authors from "@/data/authors.json";
-
-import { getQueries, lowercaseCompare } from "@/helpers/apiHelpers";
+import { getQueries } from "@/helpers/apiHelpers";
 import authorValidator from "@/utils/validators/authorValidator";
-import { PrismaClient } from "@prisma/client";
+import { Author, PrismaClient } from "@prisma/client";
 
-const prismaClient = new PrismaClient
+const prisma = new PrismaClient().$extends({
+  result: {
+    author: {
+      fullName: {
+        needs: { firstName: true, lastName: true},
+        compute(author){
+          return `${author.firstName} ${author.lastName}`
+        }
+      }
+    }
+  }
+})
 
 export async function GET(request: NextRequest) {
   const [q] = getQueries(request.url, ["q"]);
-  let filteredAuthors = [...authors]; //! DB call
 
-  const _authors = await prismaClient.author.findMany()
-  console.log("authors from db", _authors)
-
+  let authors: Author[] = []
   if (q) {
-    filteredAuthors = filteredAuthors.filter((author) =>
-      lowercaseCompare(`${author.firstName} ${author.lastName}`, q)
-    );
+     authors = await prisma.author.findMany({
+      where: {
+        firstName: {
+          contains: q,
+          mode: "insensitive"
+        }
+     }
+  })
+  }
+  else {
+    authors = await prisma.author.findMany();
   }
 
-  return NextResponse.json(filteredAuthors);
+  return NextResponse.json(authors);
 }
 
 export async function POST(request: NextRequest) {
@@ -36,15 +50,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const _newAuthor = await prismaClient.author.create({
+    const newAuthor = await prisma.author.create({
       data: body
     })
-    console.log("new author", _newAuthor)
-    const author: Author = {
-      ...body,
-      id: 1,
-    };
-    return NextResponse.json(author);
+
+    return NextResponse.json(newAuthor);
   } catch (error: any) {
     console.warn("Error creating author", error);
     return NextResponse.json(
