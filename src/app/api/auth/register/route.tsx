@@ -28,7 +28,4 @@ export async function POST(request:NextRequest) {
             }
           );
     }
-    return NextResponse.json({
-        message: "Unimplemented"
-    }, { status: 501})
 }
