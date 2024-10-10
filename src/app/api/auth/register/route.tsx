@@ -1,5 +1,6 @@
 import { UserRegistrationData } from "@/types/user";
 import { hashPassword } from "@/utils/bcrypt";
+import { signJWT } from "@/utils/jwt";
 import { userExists } from "@/utils/prisma";
 import { userRegistrationValidator } from "@/utils/validators/userValidator";
 import { PrismaClient, User } from "@prisma/client";
@@ -42,7 +43,12 @@ export async function POST(request: NextRequest) {
         name: body.name,
       },
     });
-    return NextResponse.json(user, { status: 201 });
+    const token = await signJWT({
+        userId: user.id,
+    })
+    return NextResponse.json({
+        token,
+    }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       {
