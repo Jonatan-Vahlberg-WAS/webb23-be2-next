@@ -1,13 +1,4 @@
-type User = {
-  id: number;
-  name: string
-  email: string;
-  phone: string
-};
+import { User } from "@prisma/client";
 
-type UserPost = {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
-};
+
+type UserRegistrationData = Omit<User, "id" | "createdAt" | "updatedAt">
