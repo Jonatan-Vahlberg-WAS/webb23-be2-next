@@ -1,4 +1,5 @@
 import { UserLoginData } from "@/types/user";
+import { comparePassword } from "@/utils/bcrypt";
 import { userLoginValidator } from "@/utils/validators/userValidator";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -26,13 +27,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const passwordIsSame = body.password === user.password;
+    const passwordIsSame = await comparePassword(body.password, user.password)
     if (!passwordIsSame) {
       throw new Error("Password missmatch");
     }
-
+    const userWithoutPassword = {
+        ...user,
+        password: undefined
+    }
     return NextResponse.json({
-      user,
+        user: userWithoutPassword,
     });
   } catch (error: any) {
     console.log("Error: failed to login", error.message);
