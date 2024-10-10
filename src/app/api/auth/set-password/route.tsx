@@ -1,11 +1,45 @@
-import { NextRequest } from "next/server";
+import { UserResetPasswordData } from "@/types/user";
+import { hashPassword } from "@/utils/bcrypt";
+import { userResetPasswordValidator } from "@/utils/validators/userValidator";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
+const prisma = new PrismaClient()
 
 export async function POST(request:NextRequest) {
-    //TODO: take in email old password and new password uuid
+    try {
+        const body: UserResetPasswordData = await request.json();
+        const [hasErrors, errors] = userResetPasswordValidator(body)
+        if(hasErrors) {
+            return NextResponse.json({ errors }, { status: 400})
+        }
+        await prisma.user.update({
+            where: {
+                email: body.email,
+                passwordResetUUID: body.uuid
+            },
+             data: {
+                password: await hashPassword(body.newPassword),
+                passwordResetUUID: null
+             }
+        })
+        return NextResponse.json({
+            message: "User password was set"
+        })
+    } catch (error: any) {
+        console.log("Error: failed to set password", error.message);
+        return NextResponse.json({
+            message: "User not found",
+        }, {
+            status: 404
+        });
+        
+    }
+    //TODO: take in email and new password uuid
     //TODO: find user on email and passwordResetUUID
-    //TODO: validate old password is same
+    //!ELSE: return message "User not found"
     //TODO: hash new password
-    //TODO: update user object with new password   
-   //TODO: return message "Password has been set"  
+    //TODO: update user object with new password and remove passwordResetUUID   
+   //TODO: return message "Password has been set"
+   //!ELSE: return message "User not found"  
 }
