@@ -1,16 +1,46 @@
-import { NextRequest } from "next/server";
+import { UserLoginData } from "@/types/user";
+import { userLoginValidator } from "@/utils/validators/userValidator";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
-    //TODO: Implement user login
+  try {
+    const body: UserLoginData = await request.json();
+    const [hasErrors, errors] = userLoginValidator(body);
+    if (hasErrors) {
+      return NextResponse.json(
+        {
+          errors,
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
-    //TODO: validate incoming data
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        email: body.email.toLowerCase()
+      },
+    });
 
-    //TODO: find user on email
-    //!ELSE: return 400 "user matching credentials not found"
+    const passwordIsSame = body.password === user.password;
+    if (!passwordIsSame) {
+      throw new Error("Password missmatch");
+    }
 
-    //TODO: validate password is matching
-    //!ELSE: return 400 "user matching credentials not found"
-
-    //TODO: return user
+    return NextResponse.json({
+      user,
+    });
+  } catch (error: any) {
+    console.log("Error: failed to login", error.message);
+    return NextResponse.json(
+      {
+        message: "user matching credentials not found",
+      },
+      { status: 400 }
+    );
+  }
 }
