@@ -5,13 +5,30 @@ import authors from "@/data/authors.json";
 
 import bookValidator from "@/utils/validators/bookValidator";
 import { includeAuthor } from "@/helpers/bookHelpers";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest, options: APIOptions) {
   const id = options.params.id;
-  const localBooks: Book[] = [...books];
-  const book = localBooks.find((book) => book.id === Number(id)); //! SIMULATED DB CALL
 
-  if (!book) {
+  try {
+    const book: Book | null = await prisma.book.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+    return NextResponse.json(book);
+  } catch (error: any) {
+    console.warn("Error getting book: ", error.message);
+
     return NextResponse.json(
       {
         message: "Book not found",
@@ -19,30 +36,18 @@ export async function GET(request: NextRequest, options: APIOptions) {
       { status: 404 }
     );
   }
-
-  const bookWithAuthor = includeAuthor(book, authors)
-
-  return NextResponse.json(bookWithAuthor);
 }
+
 
 export async function PUT(request: NextRequest, options: APIOptions) {
   const id = options.params.id;
-  const localBooks: Book[] = [...books];
-  const bookIndex = localBooks.findIndex((book) => book.id === Number(id)); //! SIMULATED DB CALL
-
-  if (bookIndex === -1) {
-    return NextResponse.json(
-      {
-        message: "Book not found",
-      },
-      { status: 404 }
-    );
-  }
-
-  // Validate data
+  let body: Book | null = null;
   try {
-    const body: Book = await request.json();
-    const [hasErrors, errors] = bookValidator(body, Number(id));
+    body = await request.json();
+    if (!body) {
+      throw new Error();
+    }
+    const [hasErrors, errors] = bookValidator(body, id);
     if (hasErrors) {
       return NextResponse.json(
         {
@@ -51,12 +56,6 @@ export async function PUT(request: NextRequest, options: APIOptions) {
         { status: 400 }
       );
     }
-    const updatedBook: Book = {
-      ...localBooks[bookIndex],
-      ...body,
-    };
-    const updatedBookWithAuthor = includeAuthor(updatedBook, authors)
-    return NextResponse.json(updatedBookWithAuthor);
   } catch (error: any) {
     console.warn("Error updating book: ", error.message);
 
@@ -69,14 +68,42 @@ export async function PUT(request: NextRequest, options: APIOptions) {
       }
     );
   }
-}
 
+  try {
+    const updatedBook = await prisma.book.update({
+      where: {
+        id,
+      },
+      data: {
+        title: body.title,
+        authorId: body.authorId,
+      },
+      include: {
+        author: true,
+      },
+    });
+    return NextResponse.json(updatedBook);
+  } catch (error: any) {
+    console.error("Error updating author", error.message);
+    NextResponse.json(
+      {
+        message: "Author not found",
+      },
+      { status: 404 }
+    );
+  }
+}
 export async function DELETE(request: NextRequest, options: APIOptions) {
   const id = options.params.id;
-  const localBooks: Book[] = [...books];
-  const bookIndex = localBooks.findIndex((book) => book.id === Number(id)); //! SIMULATED DB CALL
-
-  if (bookIndex === -1) {
+  try {
+    await prisma.book.delete({
+      where: {
+        id,
+      },
+    });
+    return new Response(null, { status: 204 });
+  } catch (error: any) {
+    console.warn("error deleting book", error.message);
     return NextResponse.json(
       {
         message: "Book not found",
@@ -84,7 +111,4 @@ export async function DELETE(request: NextRequest, options: APIOptions) {
       { status: 404 }
     );
   }
-  localBooks.splice(bookIndex, 1);
-
-  return new Response(null, { status: 204 });
 }

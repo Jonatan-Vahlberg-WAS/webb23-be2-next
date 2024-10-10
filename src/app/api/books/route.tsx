@@ -1,51 +1,41 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import books from "@/data/books.json";
-import authors from "@/data/authors.json";
-import bookValidator from "@/utils/validators/bookValidator";
-import { includeAuthor } from "@/helpers/bookHelpers";
-import { lowercaseCompare } from "@/helpers/apiHelpers";
+import { getQueries } from "@/helpers/apiHelpers";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-// export async function GET(request: NextRequest) {
-//   let filteredBooks: (Book | BookWithAuthor)[] = [...books]; //! SIMULATED DB CALL
+export async function GET(request: NextRequest) {
+  //search query filter
+  const [q, _with] = getQueries(request.url, ["q", "with"]);
+  const withAuthor = _with === "author";
+  const include = withAuthor ? { include: { author: true } } : {};
 
-//   //search query filter
-//   const searchParams = new URL(request.url).searchParams;
-//   const q = searchParams.get("q");
-//   const withAuthor = searchParams.get("with") === "author"
-
-//   if(withAuthor) {
-//     filteredBooks = filteredBooks.map(book => {
-//       return includeAuthor(book, authors)
-//     })
-//   }
-
-//   if (q) {
-//     filteredBooks = filteredBooks.filter(
-//       (book) => {
-//         let matches = (
-//           lowercaseCompare(book.title, q) ||
-//           lowercaseCompare(book.summary, q)
-//         )
-//         if(!matches && withAuthor && typeof book.author !== "number"){
-//           const authorName = `${book.author.firstName} ${book.author.lastName}`
-//           matches = lowercaseCompare(authorName, q)
-//         }
-//         return matches
-//       }
-//     );
-//   }
-
-//   return NextResponse.json(filteredBooks);
-// }
+  if (q) {
+    //@ts-ignore
+    const books = await prisma.book.findMany({
+      where: {
+        title: {
+          contains: q,
+          mode: "insensitive",
+        },
+      },
+      ...include,
+    });
+    return NextResponse.json(books);
+  }
+  
+  //@ts-ignore
+  const books = await prisma.book.findMany({
+    ...include,
+  });
+  return NextResponse.json(books);
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body: BookData = await request.json();
-    let [hasErrors, errors] = [false, {}] // bookValidator(body);
+    let [hasErrors, errors] = [false, {}]; // bookValidator(body);
     if (hasErrors) {
       return NextResponse.json(
         {
@@ -57,12 +47,12 @@ export async function POST(request: NextRequest) {
     const book = await prisma.book.create({
       data: {
         title: body.title,
-        authorId: body.authorId
+        authorId: body.authorId,
       },
       include: {
-        author: true
-      }
-    })
+        author: true,
+      },
+    });
     return NextResponse.json(book, { status: 201 });
   } catch (error: any) {
     console.warn("Error creating book: ", error.message);
