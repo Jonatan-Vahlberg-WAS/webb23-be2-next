@@ -34,12 +34,5 @@ export async function POST(request:NextRequest) {
             status: 404
         });
         
-    }
-    //TODO: take in email and new password uuid
-    //TODO: find user on email and passwordResetUUID
-    //!ELSE: return message "User not found"
-    //TODO: hash new password
-    //TODO: update user object with new password and remove passwordResetUUID   
-   //TODO: return message "Password has been set"
-   //!ELSE: return message "User not found"  
+    } 
 }
