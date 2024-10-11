@@ -9,8 +9,8 @@ class LocalStorageKit {
 
   static get(key: LocalStorageKey) {
     const jsonData = localStorage.getItem(key);
-    if (!jsonData) {
-      return null;
+    if (!jsonData || typeof jsonData === "string") {
+      return jsonData;
     }
     return JSON.parse(jsonData);
   }
