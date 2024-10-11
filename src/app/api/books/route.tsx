@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getQueries } from "@/helpers/apiHelpers";
 import { PrismaClient } from "@prisma/client";
+import { BookData } from "@/types/book";
 
 const prisma = new PrismaClient();
 

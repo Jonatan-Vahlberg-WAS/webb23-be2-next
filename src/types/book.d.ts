@@ -1,19 +1,10 @@
-type Author = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-};
+import { Author, Book } from "@prisma/client";
+
 
 type AuthorData = Omit<Author, "id">;
 
-type Book = {
-  id: string;
-  authorId: string;
-  title: string;
-};
 
-type BookWithAuthor = Omit<Book, "author"> & {
+type BookWithAuthor = Book & {
   author: Author;
 };
 

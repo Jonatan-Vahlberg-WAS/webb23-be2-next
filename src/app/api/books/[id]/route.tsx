@@ -1,11 +1,8 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import books from "@/data/books.json";
-import authors from "@/data/authors.json";
 
 import bookValidator from "@/utils/validators/bookValidator";
-import { includeAuthor } from "@/helpers/bookHelpers";
-import { PrismaClient } from "@prisma/client";
+import { Book, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -84,10 +81,10 @@ export async function PUT(request: NextRequest, options: APIOptions) {
     });
     return NextResponse.json(updatedBook);
   } catch (error: any) {
-    console.error("Error updating author", error.message);
-    NextResponse.json(
+    console.error("Error updating book 2", error);
+    return NextResponse.json(
       {
-        message: "Author not found",
+        message: "Book not found",
       },
       { status: 404 }
     );

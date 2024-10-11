@@ -51,8 +51,8 @@ export const config = {
   matcher: [
     "/api/authors/",
     "/api/authors/:id*",
-    "/api/books/",
-    "/api/books/:id*",
+    // "/api/books/",
+    // "/api/books/:id*",
     "/api/users/me",
   ],
 };

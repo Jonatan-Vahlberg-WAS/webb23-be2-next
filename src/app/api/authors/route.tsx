@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getQueries } from "@/helpers/apiHelpers";
 import authorValidator from "@/utils/validators/authorValidator";
 import { Author, PrismaClient } from "@prisma/client";
+import { AuthorData } from "@/types/book";
 
 const prisma = new PrismaClient().$extends({
   result: {
