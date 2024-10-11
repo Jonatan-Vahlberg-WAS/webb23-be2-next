@@ -4,8 +4,8 @@ import { BookWithAuthor } from "@/types/book";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
-export async function getBooks(): Promise<BookWithAuthor[]> {
-  const url = new URL(`${BASE_URL}/api/books?with=author`);
+export async function getBooks(q?: string): Promise<BookWithAuthor[]> {
+  const url = new URL(`${BASE_URL}/api/books?with=author${q ? `&q=${q}`: ""}`);
 
   try {
     const response = await fetch(url);

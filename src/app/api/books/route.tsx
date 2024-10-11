@@ -8,26 +8,33 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   //search query filter
-  const [q, _with] = getQueries(request.url, ["q", "with"]);
+  const [q, _with, author, _orderBy] = getQueries(request.url, ["q", "with", "author", "orderBy"]);
+  console.log("author", author)
   const withAuthor = _with === "author";
   const include = withAuthor ? { include: { author: true } } : {};
 
-  if (q) {
-    //@ts-ignore
-    const books = await prisma.book.findMany({
-      where: {
-        title: {
-          contains: q,
-          mode: "insensitive",
-        },
-      },
-      ...include,
-    });
-    return NextResponse.json(books);
+  let where: {[key: string]: any} = {}
+  let orderBy: {[key: string]: any} = {} 
+
+  if(q) {
+    where.title = {
+      contains: q,
+      mode: "insensitive",
+    };
   }
-  
+
+  if(author) {
+    where.authorId = author
+  }
+
+  if(_orderBy) {
+    orderBy.title = _orderBy
+  }
+
   //@ts-ignore
   const books = await prisma.book.findMany({
+    where,
+    orderBy,
     ...include,
   });
   return NextResponse.json(books);
