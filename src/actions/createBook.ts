@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation"
-
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 export async function createBook(formData: FormData): Promise<void> {

@@ -9,3 +9,5 @@ type UserResetPasswordData = {
   newPassword: string;
   uuid: string
 }
+
+type SafeUser = Omit<User,"password" | "passwordResetUUID">
