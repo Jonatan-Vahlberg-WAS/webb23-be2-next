@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyJWT } from "./utils/jwt";
 
 const UNSAFE_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
-const UNSAFE_REQUESTS = [
-    '/api/users/me'
-]
+const UNSAFE_REQUESTS = ["/api/users/me"];
 
 export async function middleware(request: NextRequest) {
-    const url = new URL(request.url)
-    
-    console.log("middleware called", url.pathname);
-  if (UNSAFE_METHODS.includes(request.method) || UNSAFE_REQUESTS.includes(url.pathname)) {
+  const url = new URL(request.url);
+
+  console.log("middleware called", url.pathname);
+  if (
+    UNSAFE_METHODS.includes(request.method) ||
+    UNSAFE_REQUESTS.includes(url.pathname)
+  ) {
     try {
       console.log("Unsafe");
       const Authorization = request.headers.get("Authorization");
@@ -27,7 +28,6 @@ export async function middleware(request: NextRequest) {
         throw new Error("No token payload");
       }
       console.log("Authorization -> decrypted", decryptedToken);
-      //TODO: send with userId
       const headers = new Headers(request.headers);
       headers.set("userId", decryptedToken.userId);
       return NextResponse.next({
@@ -48,5 +48,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/authors/", "/api/authors/:id*", "/api/users/me"],
+  matcher: [
+    "/api/authors/",
+    "/api/authors/:id*",
+    "/api/books/",
+    "/api/books/:id*",
+    "/api/users/me",
+  ],
 };
