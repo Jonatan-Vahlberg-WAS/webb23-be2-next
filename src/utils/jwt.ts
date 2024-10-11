@@ -20,7 +20,7 @@ export async function signJWT(payload:JWTUserPayload): Promise<string> {
     return await new Jose.SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('1d')
+    .setExpirationTime('1w')
     .sign(encodedSecret);
 }
 

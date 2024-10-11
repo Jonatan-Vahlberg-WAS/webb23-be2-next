@@ -4,6 +4,7 @@ import { createContext, PropsWithChildren, useContext, useEffect, useState } fro
 import { SafeUser } from "@/types/user";
 
 import {login as loginAction} from "@/actions/login"
+import {getUser as getUserAction} from "@/actions/getUser"
 import LocalStorageKit from "@/utils/localStorageKit";
 
 type OnComplete = (response?: any) => void;
@@ -53,6 +54,12 @@ function UserProvider({children}: PropsWithChildren) {
     }
   },[])
 
+  useEffect(() => {
+    if(token && !user) {
+        getUser()
+    }
+  },[token])
+
   const login: typeof defaultState.actions.login = async (
     email,
     password,
@@ -62,6 +69,7 @@ function UserProvider({children}: PropsWithChildren) {
     try {
         const token = await loginAction(email, password)
         setToken(token)
+        console.log(token)
         LocalStorageKit.set("@library/token", token)
     } catch(error: any) {
         console.warn("Error logging in", error.message)
@@ -69,7 +77,28 @@ function UserProvider({children}: PropsWithChildren) {
     }
   };
 
-  const logout = () => {};
+  const logout = () => {
+    setUser(defaultState.user)
+    setToken(defaultState.token)
+    LocalStorageKit.remove("@library/token")
+  };
+
+  //TODO: register takes data sets token
+
+  const getUser = async () => {
+    try {
+        if(! token ){
+            throw new Error();
+        }
+        // return console.log("token", token)
+        const _user = await getUserAction(token)
+        console.log(_user)
+    } catch (error: any) {
+        console.log(error)
+        logout();
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{

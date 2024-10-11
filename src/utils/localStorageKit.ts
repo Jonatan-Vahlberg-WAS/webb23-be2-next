@@ -2,17 +2,20 @@ type LocalStorageKey = "@library/token";
 
 class LocalStorageKit {
   static set(key: LocalStorageKey, data: any) {
-    const jsonData = JSON.stringify(data);
-
+    let jsonData = typeof data === "string" ? data : JSON.stringify(data);
     localStorage.setItem(key, jsonData);
   }
 
   static get(key: LocalStorageKey) {
     const jsonData = localStorage.getItem(key);
-    if (!jsonData || typeof jsonData === "string") {
+    try {
+      if (!jsonData) {
+        return null;
+      }
+      return JSON.parse(jsonData);
+    } catch (error) {
       return jsonData;
     }
-    return JSON.parse(jsonData);
   }
 
   static remove(key: LocalStorageKey) {
@@ -20,4 +23,4 @@ class LocalStorageKit {
   }
 }
 
-export default LocalStorageKit
+export default LocalStorageKit;
