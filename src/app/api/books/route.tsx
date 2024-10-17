@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await prisma.book.deleteMany({});
     const body: BookData = await request.json();
     let [hasErrors, errors] = bookValidator(body);
     if (hasErrors) {

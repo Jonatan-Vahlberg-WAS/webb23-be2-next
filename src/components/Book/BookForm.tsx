@@ -22,6 +22,8 @@ import {
   FormMessage,
 } from "../ui/form";
 import BookCategorySelect from "./BookCategorySelect";
+import { useUser } from "@/context/user";
+import { useRouter } from "next/navigation";
 
 const bookSchema = z.object({
   title: z.string().min(1, {
@@ -32,6 +34,8 @@ const bookSchema = z.object({
   }),
   cover: z.string().min(1, {
     message: "Cover url is required",
+  }).url({
+    message: "Cover has to be a valid url",
   }),
   categories: z.array(z.string()).min(1, {
     message: "At least one category is required",
@@ -43,6 +47,8 @@ type BookFormProps = {
 };
 
 export default function BookForm({ authors }: BookFormProps) {
+  const router = useRouter();
+  const user = useUser();
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
@@ -55,8 +61,15 @@ export default function BookForm({ authors }: BookFormProps) {
 
   console.log("Form", form.formState.errors);
 
-  function onSubmit(values: z.infer<typeof bookSchema>) {
+  async function onSubmit(values: z.infer<typeof bookSchema>) {
     console.log(values);
+    if(user.token) {
+      const book =  await createBook(values as BookData, user.token);
+      if(book) {
+        console.log("Book created", book);
+        router.push(`/books/${book.id}`);
+      }
+    }
   }
   return (
     <IsAuthed message="Only logged in users can create books">
@@ -119,6 +132,11 @@ export default function BookForm({ authors }: BookFormProps) {
                     <FormControl>
                       <Input placeholder="Book Cover" {...field} />
                     </FormControl>
+                    {form.formState.errors.cover && (
+                      <p className="text-red-500">
+                        {form.formState.errors.cover.message}
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
