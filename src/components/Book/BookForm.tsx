@@ -21,6 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import BookCategorySelect from "./BookCategorySelect";
 
 const bookSchema = z.object({
   title: z.string().min(1, {
@@ -41,28 +42,7 @@ type BookFormProps = {
   authors: Author[];
 };
 
-const bookCategories = [
-  "Fiction",
-  "Non-fiction",
-  "Mystery",
-  "Thriller",
-  "Romance",
-  "Science Fiction",
-  "Fantasy",
-  "Historical Fiction",
-  "Biography",
-  "Memoir",
-  "Self-Help",
-  "Business",
-  "Education",
-  "Children's Books",
-  "Young Adult",
-  "Cookbook",
-  "Travel",
-  "Art",
-  "Music",
-  "Poetry",
-];
+
 
 export default function BookForm({ authors }: BookFormProps) {
   const form = useForm<z.infer<typeof bookSchema>>({
@@ -153,16 +133,10 @@ export default function BookForm({ authors }: BookFormProps) {
                     <FormLabel>Categories</FormLabel>
                       <br/>
                     <FormControl>
-                      <select name="categories" multiple onChange={(e) => {
-                        console.log(e.target.value)
-                      }} >
-                        <option value="" disabled>
-                          Select categories
-                        </option>
-                        {bookCategories.map((category) => (
-                          <option value={category}>{category}</option>
-                        ))}
-                      </select>
+                      <BookCategorySelect
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
