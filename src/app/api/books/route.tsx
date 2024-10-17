@@ -9,27 +9,39 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   //search query filter
-  const [q, _with, author, _orderBy] = getQueries(request.url, ["q", "with", "author", "orderBy"]);
-  console.log("author", author)
+  const [q, _with, author, _orderBy, category] = getQueries(request.url, [
+    "q",
+    "with",
+    "author",
+    "orderBy",
+    "category"
+  ]);
+
   const withAuthor = _with === "author";
   const include = withAuthor ? { include: { author: true } } : {};
 
-  let where: {[key: string]: any} = {}
-  let orderBy: {[key: string]: any} = {} 
+  let where: { [key: string]: any } = {};
+  let orderBy: { [key: string]: any } = {};
 
-  if(q) {
+  if (q) {
     where.title = {
       contains: q,
       mode: "insensitive",
     };
   }
 
-  if(author) {
-    where.authorId = author
+  if(category) {
+    where.categories = {
+      has: category
+    }
   }
 
-  if(_orderBy) {
-    orderBy.title = _orderBy
+  if (author) {
+    where.authorId = author;
+  }
+
+  if (_orderBy) {
+    orderBy.title = _orderBy;
   }
 
   //@ts-ignore
@@ -43,7 +55,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await prisma.book.deleteMany({})
+    await prisma.book.deleteMany({});
     const body: BookData = await request.json();
     let [hasErrors, errors] = bookValidator(body);
     if (hasErrors) {
