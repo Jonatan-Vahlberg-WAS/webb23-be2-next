@@ -7,33 +7,171 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createBook } from "@/actions/createBook";
 import IsAuthed from "../Auth/IsAuthed";
+import { Author } from "@prisma/client";
 
-export default function BookForm() {
-  // const authors = await getAuthors();
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { BookData } from "@/types/book";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 
+const bookSchema = z.object({
+  title: z.string().min(1, {
+    message: "Valid title required",
+  }),
+  authorId: z.string().min(1, {
+    message: "Choose an author",
+  }),
+  cover: z.string().min(1, {
+    message: "Cover url is required",
+  }),
+  categories: z.array(z.string()).min(1, {
+    message: "At least one category is required",
+  }),
+});
+
+type BookFormProps = {
+  authors: Author[];
+};
+
+const bookCategories = [
+  "Fiction",
+  "Non-fiction",
+  "Mystery",
+  "Thriller",
+  "Romance",
+  "Science Fiction",
+  "Fantasy",
+  "Historical Fiction",
+  "Biography",
+  "Memoir",
+  "Self-Help",
+  "Business",
+  "Education",
+  "Children's Books",
+  "Young Adult",
+  "Cookbook",
+  "Travel",
+  "Art",
+  "Music",
+  "Poetry",
+];
+
+export default function BookForm({ authors }: BookFormProps) {
+  const form = useForm<z.infer<typeof bookSchema>>({
+    resolver: zodResolver(bookSchema),
+    defaultValues: {
+      title: "",
+      cover: "",
+      authorId: "",
+      categories: [],
+    },
+  });
+
+  console.log("Form", form.formState.errors);
+
+  function onSubmit(values: z.infer<typeof bookSchema>) {
+    console.log(values);
+  }
   return (
-    <IsAuthed
-      message="Only logged in users can create books"
-    >
+    <IsAuthed message="Only logged in users can create books">
+      <Card className="w-96">
+        <CardHeader>
+          <CardTitle>New Book</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Book title" {...field} />
+                    </FormControl>
+                    {form.formState.errors.title && (
+                      <p className="text-red-500">
+                        {form.formState.errors.title.message}
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-    <Card>
-      <CardHeader>
-        <CardTitle>New Book</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form method="POST" action={createBook}>
-          <Input name="title" placeholder="Book title" />
-          <select name="authorId" className="block p-4 border-gray-100 border-2 ">
-          {/* {authors.map(author => (
-                <option key={author.id} value={author.id}>
-                    {author.firstName} {author.lastName}
-                </option>
-              ))} */}
-          </select>
-          <Button type="submit">Create book</Button>
-        </form>
-      </CardContent>
-    </Card>
+              <FormField
+                control={form.control}
+                name="authorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Author</FormLabel>
+                    <FormControl>
+                      <select
+                        className="block p-1 border-gray-100 border-2 w-full "
+                        {...field}
+                      >
+                        <option disabled value={""}>
+                          Select Author
+                        </option>
+                        {authors.map((author) => (
+                          <option key={author.id} value={author.id}>
+                            {author.firstName} {author.lastName}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cover"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Book cover</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Book Cover" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="categories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categories</FormLabel>
+                      <br/>
+                    <FormControl>
+                      <select name="categories" multiple onChange={(e) => {
+                        console.log(e.target.value)
+                      }} >
+                        <option value="" disabled>
+                          Select categories
+                        </option>
+                        {bookCategories.map((category) => (
+                          <option value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Create Book</Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </IsAuthed>
   );
 }
