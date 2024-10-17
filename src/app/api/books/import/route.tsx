@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
       data: distinctBooks.map((book) => ({
         title: book.title,
         authorId: book.authorId,
+        cover: book.cover,
+        categories: book.categories
       })),
     });
 

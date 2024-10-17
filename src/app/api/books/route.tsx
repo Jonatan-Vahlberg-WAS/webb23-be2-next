@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getQueries } from "@/helpers/apiHelpers";
 import { PrismaClient } from "@prisma/client";
 import { BookData } from "@/types/book";
+import bookValidator from "@/utils/validators/bookValidator";
 
 const prisma = new PrismaClient();
 
@@ -42,8 +43,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await prisma.book.deleteMany({})
     const body: BookData = await request.json();
-    let [hasErrors, errors] = [false, {}]; // bookValidator(body);
+    let [hasErrors, errors] = bookValidator(body);
     if (hasErrors) {
       return NextResponse.json(
         {
@@ -56,6 +58,8 @@ export async function POST(request: NextRequest) {
       data: {
         title: body.title,
         authorId: body.authorId,
+        cover: body.cover,
+        categories: body.categories,
       },
       include: {
         author: true,

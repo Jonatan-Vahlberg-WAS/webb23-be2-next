@@ -74,6 +74,8 @@ export async function PUT(request: NextRequest, options: APIOptions) {
       data: {
         title: body.title,
         authorId: body.authorId,
+        cover: body.cover,
+        categories: body.categories,
       },
       include: {
         author: true,

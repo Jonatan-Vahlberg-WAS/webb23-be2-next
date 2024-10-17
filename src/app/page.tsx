@@ -11,9 +11,11 @@ export default async function Home(props: any) {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <AuthForm />
         <BookForm />
+        <div className="flex gap-4 flex-wrap">
         {data.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
+        </div>
       </main>
     </div>
   );
