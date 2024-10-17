@@ -1,21 +1,14 @@
-"use client";
-
 import { getAuthors } from "@/actions/getAuthors";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createBook } from "@/actions/createBook";
-import IsAuthed from "../Auth/IsAuthed";
 
-export default function BookForm() {
-  // const authors = await getAuthors();
+export default async function BookForm() {
+  const authors = await getAuthors();
 
   return (
-    <IsAuthed
-      message="Only logged in users can create books"
-    >
-
     <Card>
       <CardHeader>
         <CardTitle>New Book</CardTitle>
@@ -24,16 +17,15 @@ export default function BookForm() {
         <form method="POST" action={createBook}>
           <Input name="title" placeholder="Book title" />
           <select name="authorId" className="block p-4 border-gray-100 border-2 ">
-          {/* {authors.map(author => (
+          {authors.map(author => (
                 <option key={author.id} value={author.id}>
                     {author.firstName} {author.lastName}
                 </option>
-              ))} */}
+              ))}
           </select>
           <Button type="submit">Create book</Button>
         </form>
       </CardContent>
     </Card>
-    </IsAuthed>
   );
 }
