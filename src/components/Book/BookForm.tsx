@@ -42,8 +42,6 @@ type BookFormProps = {
   authors: Author[];
 };
 
-
-
 export default function BookForm({ authors }: BookFormProps) {
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
@@ -131,7 +129,7 @@ export default function BookForm({ authors }: BookFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Categories</FormLabel>
-                      <br/>
+                    <br />
                     <FormControl>
                       <BookCategorySelect
                         value={field.value}
@@ -141,7 +139,9 @@ export default function BookForm({ authors }: BookFormProps) {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Create Book</Button>
+              <Button className="mt-3" type="submit">
+                Create Book
+              </Button>
             </form>
           </Form>
         </CardContent>
