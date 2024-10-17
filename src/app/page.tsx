@@ -1,6 +1,7 @@
 import { getBooks } from "@/actions/getBooks";
 import AuthForm from "@/components/Auth/AuthForm";
 import BookCard from "@/components/Book/BookCard";
+import BookingCalendar from "@/components/Booking/BookingCalendar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -21,6 +22,7 @@ export default async function Home(props: any) {
             Add new book
           </Button>
         </Link>
+      <BookingCalendar/>
       </main>
     </div>
   );
