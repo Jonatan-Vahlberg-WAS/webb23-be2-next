@@ -3,7 +3,6 @@
 import { BookData } from "@/types/book";
 import { Book } from "@prisma/client";
 import { revalidateTag } from "next/cache";
-import { NextResponse } from "next/server";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
