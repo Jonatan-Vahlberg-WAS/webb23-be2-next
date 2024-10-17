@@ -7,12 +7,12 @@ import { NextResponse } from "next/server";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
-export async function createBook(bookData: BookData ,token: string) {
-  const url = new URL(`${BASE_URL}/api/books`);
+export async function updateBook(id: string, bookData: BookData ,token: string) {
+  const url = new URL(`${BASE_URL}/api/books/${id}`);
 
   try {
     const response = await fetch(url, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify(bookData),
         headers: {
           "Content-Type": "application/json",
@@ -21,13 +21,14 @@ export async function createBook(bookData: BookData ,token: string) {
     });
 
     if (!response.ok) {
-      throw new Error("Unable to create book");
+      throw new Error("Unable to update book");
     }
     const data: Book = await response.json();
-    revalidateTag("getBooks"); // revalidate the getBooks cache so booklist is updated
+    revalidateTag("getBooks");
+    revalidateTag(`getBook-${id}`);
     return data;
   } catch (error: any) {
-    console.warn("Error creating book (action)", error)
+    console.warn("Error updating book (action)", error)
     return null;
   }
 }

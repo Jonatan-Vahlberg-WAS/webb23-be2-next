@@ -18,7 +18,11 @@ export async function getBooks(queries: Queries): Promise<BookWithAuthor[]> {
     }
   });
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      next: {
+        tags: ["getBooks"],
+      }
+    });
 
     if (!response.ok) {
       throw new Error("Unable to get books");

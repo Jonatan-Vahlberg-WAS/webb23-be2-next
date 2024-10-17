@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createBook } from "@/actions/createBook";
 import IsAuthed from "../Auth/IsAuthed";
-import { Author } from "@prisma/client";
+import { Author, Book } from "@prisma/client";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookData } from "@/types/book";
+import { BookData, BookWithAuthor } from "@/types/book";
 import {
   Form,
   FormControl,
@@ -24,6 +24,7 @@ import {
 import BookCategorySelect from "./BookCategorySelect";
 import { useUser } from "@/context/user";
 import { useRouter } from "next/navigation";
+import { updateBook } from "@/actions/updateBook";
 
 const bookSchema = z.object({
   title: z.string().min(1, {
@@ -44,30 +45,41 @@ const bookSchema = z.object({
 
 type BookFormProps = {
   authors: Author[];
+  book?: Book;
 };
 
-export default function BookForm({ authors }: BookFormProps) {
+export default function BookForm({ authors, book }: BookFormProps) {
   const router = useRouter();
   const user = useUser();
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
-      title: "",
-      cover: "",
-      authorId: "",
-      categories: [],
+      title: book?.title,
+      cover: book?.cover,
+      authorId: book?.authorId,
+      categories: book?.categories,
     },
   });
 
   console.log("Form", form.formState.errors);
 
   async function onSubmit(values: z.infer<typeof bookSchema>) {
-    console.log(values);
+    const onSuccess = (_book: Book) => {
+      router.push(`/`);
+    }
     if(user.token) {
-      const book =  await createBook(values as BookData, user.token);
       if(book) {
-        console.log("Book created", book);
-        router.push(`/books/${book.id}`);
+        const updatedBook = await updateBook(book.id, values as BookData, user.token);
+        if(updatedBook) {
+          console.log("Book updated", updatedBook);
+          onSuccess(updatedBook);
+        }
+        return;
+      }
+      const createdBook =  await createBook(values as BookData, user.token);
+      if(createdBook) {
+        console.log("Book created", createdBook);
+        onSuccess(createdBook);
       }
     }
   }
@@ -75,7 +87,9 @@ export default function BookForm({ authors }: BookFormProps) {
     <IsAuthed message="Only logged in users can create books">
       <Card className="w-96">
         <CardHeader>
-          <CardTitle>New Book</CardTitle>
+          <CardTitle>
+            {book ? "Edit Book" : "New Book"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -158,7 +172,7 @@ export default function BookForm({ authors }: BookFormProps) {
                 )}
               />
               <Button className="mt-3" type="submit">
-                Create Book
+                {book ? "Update book" : "Create book"}
               </Button>
             </form>
           </Form>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,6 +33,15 @@ type BookCategorySelectProps = {
 function BookCategorySelect({ value, onChange }: BookCategorySelectProps) {
   const [categories, setCategories] = useState<string[]>(bookCategories);
   const [newCategory, setNewCategory] = useState<string>("");
+
+  useEffect(() => {
+    if (value.length > 0) {
+        const exclusiveCategories = value.filter((c) => !categories.includes(c));
+        if (exclusiveCategories.length > 0) {
+            setCategories([...categories, ...exclusiveCategories]);
+        }
+    }
+  }, []);
 
   const createCategory = () => {
     if (newCategory) {
@@ -71,23 +80,23 @@ function BookCategorySelect({ value, onChange }: BookCategorySelectProps) {
         }}
       />
       <div className="flex flex-wrap gap-1 mt-3">
-        {categories.map((category) => (
+        {categories.sort((a,b) => (
+            a.toLowerCase() > b.toLowerCase() ? 1 : -1
+        )).map((category) => (
           <Badge
             key={category}
             className="cursor-pointer"
             onClick={() => {
-                if (isSelected(category)) {
-                    removeCategory(category);
-                } else {
-                    selectCategory(category);
-                }
+              if (isSelected(category)) {
+                removeCategory(category);
+              } else {
+                selectCategory(category);
+              }
             }}
             variant={isSelected(category) ? "default" : "outline"}
           >
             {category}
-            <span className="ml-2">
-              {isSelected(category) ? "-" : "+"}
-            </span>
+            <span className="ml-2">{isSelected(category) ? "-" : "+"}</span>
           </Badge>
         ))}
       </div>
